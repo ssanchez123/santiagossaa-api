@@ -159,6 +159,7 @@ Be concise. No false positives for normal code changes."""
             "model": OLLAMA_MODEL,
             "prompt": prompt,
             "stream": False,
+            "think": False,
             "options": {"temperature": 0.1, "num_predict": 400}
         }).encode()
 
