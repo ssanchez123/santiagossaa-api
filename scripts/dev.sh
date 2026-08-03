@@ -7,15 +7,20 @@ MODE="${1:-local}"
 
 if [ "$MODE" = "docker" ]; then
     echo "🐳 Starting API with Docker Compose (dev)..."
-    docker compose -f docker-compose.dev.yml up -d --build
+    if command -v docker-compose &> /dev/null; then
+        DC=docker-compose
+    else
+        DC="docker compose"
+    fi
+    $DC -f docker-compose.dev.yml up -d --build
     echo ""
     echo "✅ API running at http://localhost:3000"
     echo "📄 Docs at http://localhost:3000/docs"
     echo ""
-    echo "Logs:  docker compose -f docker-compose.dev.yml logs -f"
-    echo "Stop:  docker compose -f docker-compose.dev.yml down"
+    echo "Logs:  $DC -f docker-compose.dev.yml logs -f"
+    echo "Stop:  $DC -f docker-compose.dev.yml down"
     echo ""
-    docker compose -f docker-compose.dev.yml logs -f
+    $DC -f docker-compose.dev.yml logs -f
 
 elif [ "$MODE" = "local" ]; then
     echo "🐍 Starting API locally (venv)..."
