@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from fastapi import FastAPI
 
-from app.api.v1.endpoints import health, info
+from app.api.v1.endpoints import health, info, status
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -18,6 +18,7 @@ app = FastAPI(
 # Register v1 endpoints
 app.include_router(health.router, prefix="/api/v1")
 app.include_router(info.router, prefix="/api/v1")
+app.include_router(status.router, prefix="api/v1")
 
 # Also expose health at root level for Docker healthcheck
 app.include_router(health.router)
