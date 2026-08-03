@@ -445,9 +445,43 @@ async def webhook(request: Request):
     return {"status": "deployed", "health": health, "details": deploy_output}
 
 
+ALERTS_SEEN_FILE = MAILBOX_PATH / ".alerts-seen"
+
+
+def get_unread_alerts() -> list[dict]:
+    """Return alert files that haven't been seen yet."""
+    MAILBOX_PATH.mkdir(parents=True, exist_ok=True)
+    seen = set()
+    if ALERTS_SEEN_FILE.exists():
+        seen = set(ALERTS_SEEN_FILE.read_text().splitlines())
+    alerts = []
+    new_seen = set()
+    for f in sorted(MAILBOX_PATH.glob("miguel-deploy-*.md")):
+        if f.name not in seen:
+            alerts.append({
+                "file": f.name,
+                "content": f.read_text(),
+            })
+            new_seen.add(f.name)
+    # Update seen file
+    if new_seen:
+        seen.update(new_seen)
+        ALERTS_SEEN_FILE.write_text("\n".join(sorted(seen)))
+    return alerts
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": "webhook-listener"}
+
+
+@app.get("/alerts")
+async def alerts():
+    """Return unread deploy alerts. Called by Mac cron via HTTPS."""
+    unread = get_unread_alerts()
+    if unread:
+        logger.info(f"{len(unread)} unread alerts retrieved")
+    return {"count": len(unread), "alerts": unread}
 
 
 if __name__ == "__main__":
