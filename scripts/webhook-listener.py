@@ -180,7 +180,29 @@ Be concise. No false positives for normal code changes."""
                 raw_response = raw_response[:-3]
             raw_response = raw_response.strip()
 
-        assessment = json.loads(raw_response)
+        # Try direct JSON parse first
+        try:
+            assessment = json.loads(raw_response)
+        except json.JSONDecodeError:
+            # Fallback: extract JSON object with regex
+            import re
+            json_match = re.search(r'\{[^{}]*"risk_level"[^{}]*\}', raw_response, re.DOTALL)
+            if json_match:
+                try:
+                    assessment = json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    # Last resort: extract individual fields
+                    risk = re.search(r'"risk_level"\s*:\s*"(\w+)"', raw_response)
+                    deploy = re.search(r'"should_deploy"\s*:\s*(true|false)', raw_response)
+                    assessment = {
+                        "risk_level": risk.group(1) if risk else "unknown",
+                        "should_deploy": deploy.group(1) == "true" if deploy else True,
+                        "concerns": ["AI returned malformed JSON, parsed with regex"],
+                        "summary": "Partial parse from malformed AI response.",
+                    }
+            else:
+                raise ValueError(f"Could not extract JSON from: {raw_response[:200]}")
+
         logger.info(f"AI assessment: risk={assessment.get('risk_level')}, deploy={assessment.get('should_deploy')}")
         return assessment
 
