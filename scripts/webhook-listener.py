@@ -33,7 +33,7 @@ REPO_PATH = os.environ.get("REPO_PATH", str(Path.home() / "services" / "santiago
 DEPLOY_SCRIPT = os.environ.get("DEPLOY_SCRIPT", str(Path.home() / "services" / "santiagossaa-api" / "scripts" / "deploy.sh"))
 MAILBOX_PATH = Path.home() / ".openclaw" / "mailbox"
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "deepseek-coder:6.7b")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "glm-5.2:cloud")
 HEALTH_URL = "http://localhost:3000/health"
 HEALTH_TIMEOUT = 10
 HEALTH_RETRIES = 6
@@ -163,7 +163,7 @@ Rules:
             "model": OLLAMA_MODEL,
             "prompt": prompt,
             "stream": False,
-            "options": {"temperature": 0.1, "num_predict": 300}
+            "options": {"temperature": 0.1, "num_predict": 400}
         }).encode()
 
         req = urllib.request.Request(
@@ -173,7 +173,7 @@ Rules:
             method="POST",
         )
 
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=60) as resp:
             result = json.loads(resp.read())
             raw_response = result.get("response", "").strip()
 
