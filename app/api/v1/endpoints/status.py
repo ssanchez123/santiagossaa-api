@@ -1,8 +1,9 @@
+from fastapi import APIRouter, Request
 
 router = APIRouter(tags=["status"])
 
 
-@router.get("/info")
+@router.get("/status")
 async def info(request: Request) -> dict[str, object]:
     """Return request metadata for debugging and diagnostics."""
     return {

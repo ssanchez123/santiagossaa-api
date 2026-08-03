@@ -18,7 +18,7 @@ app = FastAPI(
 # Register v1 endpoints
 app.include_router(health.router, prefix="/api/v1")
 app.include_router(info.router, prefix="/api/v1")
-app.include_router(status.router, prefix="api/v1")
+app.include_router(status.router, prefix="/api/v1")
 
 # Also expose health at root level for Docker healthcheck
 app.include_router(health.router)
