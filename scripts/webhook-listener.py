@@ -142,21 +142,17 @@ Diff:
 {diff}
 ```
 
-Respond ONLY with a JSON object (no markdown, no explanation):
-{{
-  "risk_level": "low|medium|high|critical",
-  "should_deploy": true|false,
-  "concerns": ["specific concern 1", "specific concern 2"],
-  "summary": "one sentence summary of the changes"
-}}
+Respond with ONLY a JSON object. No markdown fences. No extra text. Use this exact format:
+{{"risk_level": "low|medium|high|critical", "should_deploy": true|false, "concerns": ["concern"], "summary": "one sentence"}}
 
-Rules:
-- "low": normal app code changes, safe to deploy
-- "medium": config changes or new dependencies, deploy with caution
-- "high": security-sensitive files changed, needs review
-- "critical": Dockerfile/docker-compose/CI changed or structure broken, STOP
-- If concerns is empty, return empty list []
-- Be concise. No false positives for normal code changes."""
+Risk levels:
+- low: normal app code changes
+- medium: config or dependency changes
+- high: security-sensitive files changed
+- critical: Dockerfile/docker-compose/CI changed or structure broken
+
+If no concerns, use empty list: []
+Be concise. No false positives for normal code changes."""
 
     try:
         payload = json.dumps({
