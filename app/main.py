@@ -32,5 +32,5 @@ async def root() -> dict[str, str]:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "server": "m1cr0l1n0",
         "version": settings.app_version,
-        "deploy": "git-push-to-deploy active",
+        "deploy": "git-push-to-deploy active v2",
     }
