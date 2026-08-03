@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Deploy script — pulls latest code, rebuilds Docker image, and restarts container.
 # Called by the webhook listener or manually.
+# Usage: deploy.sh [repo_dir]
+# Exit codes: 0=success, 1=health check fail
 set -euo pipefail
 
 REPO_DIR="${1:-$HOME/services/santiagossaa-api}"
@@ -15,11 +17,7 @@ log "Repo: $REPO_DIR"
 
 cd "$REPO_DIR"
 
-# Pull latest
-log "Pulling latest code..."
-git pull origin main 2>&1 | tee -a "$LOG_FILE"
-
-# Rebuild and restart
+# Rebuild and restart (git pull already done by webhook listener)
 log "Building and restarting Docker container..."
 docker compose up -d --build 2>&1 | tee -a "$LOG_FILE"
 
